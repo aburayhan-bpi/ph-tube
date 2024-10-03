@@ -24,16 +24,25 @@ const loadVideos = () => {
         .catch((error) => console.log(error))
 };
 
+const loadCategoryVideos = (id) => {
+    // fetch the video data
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+        .then(res => res.json())
+        .then((data) => displayVideos(data.category))
+        .catch((error) => console.log(error))
+};
+
 // create displayCategories
 const displayCategories = (categories) => {
     const categoryContainer = document.getElementById('category')
     categories.forEach((item) => {
         // create button for each items
-        const button = document.createElement('button');
-        button.classList = 'btn';
-        button.innerText = item.category;
+        const buttonContainer = document.createElement('div');
+        buttonContainer.innerHTML = `
+        <button onclick="loadCategoryVideos(${item.category_id})" id="${item.category_id}" class="btn">${item.category}</button>
+        `
         // add button to category section
-        categoryContainer.append(button)
+        categoryContainer.append(buttonContainer)
     })
 
 };
@@ -41,10 +50,13 @@ const displayCategories = (categories) => {
 // load videos and show in html
 const displayVideos = (videos) => {
     const videoContainer = document.getElementById('videos');
+    videoContainer.innerHTML = "";
+
     // create a container div for videos
     videos.forEach((video) => {
-        console.log(video);
+        // console.log(video);
         const div = document.createElement('div');
+
         div.classList = "card card-compact rounded-lg cursor-pointer"
         div.innerHTML = `
         <figure class="h-[200px] relative rounded-lg">
@@ -52,7 +64,7 @@ const displayVideos = (videos) => {
                 src=${video.thumbnail}
                 class="h-full w-full object-cover"
                 alt="Shoes" />
-            ${video.others.posted_date?.length == 0 ? "" : `<span class="absolute px-1 bottom-2 right-2 bg-black text-white rounded-sm">${getTimeString(video.others.posted_date)}</span >`
+            ${video.others.posted_date?.length == 0 ? "" : `<span class="absolute text-xs px-1 bottom-2 right-2 bg-black text-white rounded-sm">${getTimeString(video.others.posted_date)}</span >`
             }
         </figure >
         <div class="flex gap-3 px-0 py-3">
@@ -77,3 +89,4 @@ const displayVideos = (videos) => {
 // call function
 loadCategories()
 loadVideos()
+loadCategoryVideos()
